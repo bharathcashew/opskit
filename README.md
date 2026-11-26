@@ -4,20 +4,9 @@ A pluggable IT ops toolkit. Write a check once as a small Python function, then 
 
 v0.1 ships with read-only AWS checks for health, security and cost. The framework is designed so anyone can add their own checks as a separate pip package without touching this repo.
 
-```
-$ opskit run --region us-east-1
-                    opskit run 3f9a1c2b7e10
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━┓
-┃ Check                        ┃ Status   ┃ Findings ┃   Time ┃
-┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━┩
-│ aws.cloudwatch.alarms_firing │ critical │        1 │ 212 ms │
-│ aws.ec2.open_security_groups │ critical │        2 │ 340 ms │
-│ aws.ec2.status_checks        │ ok       │        0 │ 188 ms │
-│ aws.ec2.unattached_volumes   │ warn     │        3 │ 151 ms │
-│ aws.elbv2.target_health      │ ok       │        0 │ 410 ms │
-│ aws.iam.access_key_age       │ warn     │        1 │ 290 ms │
-└──────────────────────────────┴──────────┴──────────┴────────┘
-```
+![opskit run: a table of checks with their status, then one line per finding](docs/images/opskit-run.png)
+
+<sub>Screenshots are real opskit output, captured against a simulated AWS account.</sub>
 
 ## Why
 
@@ -48,6 +37,10 @@ opskit run -f markdown            # paste-ready for a ticket or Slack
 ```
 
 Exit codes are `0` ok, `1` warnings, `2` critical or check errors, so `opskit run` drops straight into cron, CI gates or a Nagios-style wrapper.
+
+`opskit list` shows every installed check, its tags, its tunable params and whether it's enabled:
+
+![opskit list: check ids, titles, tags, params and enabled state](docs/images/opskit-list.png)
 
 ## Built-in checks
 
@@ -84,6 +77,12 @@ curl -s -X POST localhost:8080/v1/runs \
   -H "Content-Type: application/json" \
   -d '{"tags": ["security"], "regions": ["us-east-1"]}'
 ```
+
+![POST /v1/runs returning JSON results for the security checks](docs/images/opskit-api.png)
+
+`/metrics` exposes the latest run in Prometheus format, so you can graph it in Grafana or alert on it:
+
+![GET /metrics returning Prometheus gauges per check](docs/images/opskit-metrics.png)
 
 Docker:
 

@@ -58,12 +58,13 @@ def print_table(report: RunReport, console: Console | None = None, verbose: bool
     if verbose:
         for r in report.results:
             if r.error:
-                console.print(f"[magenta]{r.check_id}[/magenta] error: {escape(r.error)}")
+                console.print(f"[magenta]{r.check_id}[/magenta] error: {escape(r.error)}", highlight=False)
             for f in r.findings:
                 c = _COLORS[f.status]
                 where = f" [{f.region}]" if f.region else ""
                 text = escape(f"{f.resource}{where}: {f.message}")
                 label = f"[{c}]{f.status.value:8}[/{c}]"
-                console.print(f"  {label} {r.check_id}  {text}")
+                console.print(f"  {label} {r.check_id}  {text}", highlight=False)
     c = _COLORS[report.status]
-    console.print(f"\nOverall: [{c}]{report.status.value.upper()}[/{c}]  {report.summary()}")
+    counts = ", ".join(f"{n} {s}" for s, n in report.summary().items() if n)
+    console.print(f"\nOverall: [{c}]{report.status.value.upper()}[/{c}]  ({counts})", highlight=False)

@@ -36,14 +36,17 @@ def ec2_status_checks(ctx):
     return findings
 
 
+DEFAULT_SENSITIVE_PORTS = (22, 3389, 3306, 5432, 6379, 9200, 27017)
+
+
 @check(
     "aws.ec2.open_security_groups",
     title="Security groups open to the internet",
     tags=["aws", "ec2", "security"],
 )
-def open_security_groups(ctx, sensitive_ports: list[int] | None = None):
+def open_security_groups(ctx, sensitive_ports: list[int] | tuple[int, ...] = DEFAULT_SENSITIVE_PORTS):
     """Flags security groups that allow 0.0.0.0/0 or ::/0 on sensitive ports or all ports."""
-    ports = set(sensitive_ports or [22, 3389, 3306, 5432, 6379, 9200, 27017])
+    ports = set(sensitive_ports)
     findings = []
     for region in ctx.regions:
         ec2 = ctx.aws("ec2", region)
