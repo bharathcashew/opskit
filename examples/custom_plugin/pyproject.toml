@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "acme-opskit-checks"
+version = "0.1.0"
+description = "Example third-party checks for opskit"
+requires-python = ">=3.10"
+dependencies = ["opskit"]
+
+# This is the only wiring needed: opskit discovers every module in this package.
+[project.entry-points."opskit.checks"]
+acme = "acme_checks"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/acme_checks"]

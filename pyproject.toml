@@ -1,0 +1,57 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "opskit"
+version = "0.1.0"
+description = "A pluggable IT ops toolkit: run health, security and cost checks from a CLI or a REST API."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Bharath" }]
+keywords = ["devops", "sre", "aws", "monitoring", "itops", "health-checks"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: System :: Monitoring",
+  "Topic :: System :: Systems Administration",
+]
+dependencies = [
+  "boto3>=1.34",
+  "pydantic>=2.5",
+  "pyyaml>=6.0",
+  "typer>=0.12",
+  "rich>=13.7",
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.29",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "moto[ec2,elbv2,cloudwatch,iam]>=5", "httpx>=0.27", "ruff>=0.5"]
+
+[project.scripts]
+opskit = "opskit.cli:app"
+
+# Third-party packages register checks here. See examples/custom_plugin.
+# [project.entry-points."opskit.checks"]
+# mychecks = "my_package.checks"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/opskit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# B008: Typer and FastAPI declare options as call defaults by design.
+ignore = ["B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["opskit", "conftest"]
